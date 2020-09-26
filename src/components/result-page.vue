@@ -13,6 +13,7 @@
         </div>
       </van-list>
     </van-pull-refresh>
+    <van-popup></van-popup>
 
     <van-popup v-model="show" position="bottom" closeable round>
       <c-message @success="onMessage"></c-message>
