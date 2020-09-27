@@ -8,10 +8,10 @@
       </div>
       <div class="btn-item">
         <div class="text">{{ messageNum }}</div>
-        <van-button class="btn" type="primary" size="small" @click="listShow = true">留言</van-button>
+        <van-button class="btn" type="primary" size="small" @click="onOpenMessage">留言</van-button>
       </div>
     </div>
-    <message-list ref="messageList" @message-num="onMessageNum"></message-list>
+    <message-list ref="messageList" :height="height" @message-num="onMessageNum"></message-list>
   </div>
 </template>
 
@@ -47,8 +47,7 @@ export default {
      * 敬礼
      */
     onSalute() {
-      this.axios.post('/flagSalute/num').then(res => {
-        console.log(res)
+      this.axios.post('/flagSalute/num').then(() => {
         this.saluteNum++
       }).catch(error => {
         console.log(error)
@@ -98,67 +97,5 @@ export default {
       width: 90px;
     }
   }
-  .place-box {
-    background-color: #00f;
-  }
 }
-.message-wrapper {
-    position: relative;
-    overflow: hidden;
-    // display: flex;
-    // flex-direction: column;
-  }
-  .message-header {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    height: 52px;
-    line-height: 52px;
-    font-size: 16px;
-    font-weight: 500;
-    text-align: center;
-    color: #fff;
-    background-color: var(--primary-color);
-  }
-  .message-body {
-    position: relative;
-    // left: 0;
-    // right: 0;
-    // top: 52px;
-    // bottom: 50px;
-    padding-top: 52px;
-    padding-bottom: 70px;
-  }
-  .message-footer {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-
-    height: 70px;
-    padding: 0 50px;
-    background-color: #fff;
-  }
-
-  .item {
-    padding: 8px 15px;
-
-    .info {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 5px;
-      border-bottom: 1px dashed #eee;
-      font-size: 16px;
-      color: #888;
-      line-height: 30px;
-    }
-    .content {
-      line-height: 20px;
-      font-size: 14px;
-      color: #444;
-    }
-  }
 </style>

@@ -25,11 +25,11 @@
           </div>
         </div>
         <div class="message-footer">
-          <van-button type="primary" round block @click="onShow" >留言</van-button>
+          <van-button type="primary" round block @click="itemShow = true" >留言</van-button>
         </div>
       </div>
     </van-popup>
-      <van-popup v-model="show" position="bottom" closeable round get-container="body">
+      <van-popup v-model="itemShow" position="bottom" closeable round get-container="body">
       <c-message @success="onMessage"></c-message>
     </van-popup>
 </div>
@@ -49,7 +49,7 @@ export default {
   data(){
     return {
       listShow: false,
-      show: false,
+      itemShow: false,
       refreshLoading: false,
       loadLoading: false,
       loadFinished: false,
@@ -80,7 +80,7 @@ export default {
         } else {
           this.list = this.list.concat(res.data)
         }
-        this.messageNum = res.page.total
+        this.$emit('message-num', res.page.total)
         if(res.page.total <= (res.page.current -1) * res.page.size + res.data.length){
           this.loadFinished = true
         } else {
@@ -103,9 +103,6 @@ export default {
       console.log(2223)
       this.fetchList()
     },
-    onShow() {
-      this.show = true
-    },
     onMessage(){
       this.show = false
       this.onRefresh()
@@ -114,6 +111,64 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
+.message-wrapper {
+    position: relative;
+    overflow: hidden;
+    // display: flex;
+    // flex-direction: column;
+  }
+  .message-header {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 52px;
+    line-height: 52px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    color: #fff;
+    background-color: var(--primary-color);
+  }
+  .message-body {
+    position: relative;
+    // left: 0;
+    // right: 0;
+    // top: 52px;
+    // bottom: 50px;
+    padding-top: 52px;
+    padding-bottom: 70px;
+  }
+  .message-footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
 
+    height: 70px;
+    padding: 0 50px;
+    background-color: #fff;
+  }
+
+  .item {
+    padding: 8px 15px;
+
+    .info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      border-bottom: 1px dashed #eee;
+      font-size: 16px;
+      color: #888;
+      line-height: 30px;
+    }
+    .content {
+      line-height: 20px;
+      font-size: 14px;
+      color: #444;
+    }
+  }
 </style>

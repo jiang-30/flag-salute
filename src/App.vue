@@ -47,10 +47,21 @@ export default {
     return {
       step: 'guide',
       // step: 'result',
+      wWidth: 370,
       wHeight: 500,
       play: true,
       swiper: null
     }
+  },
+  provide: function () {
+    return {
+      width: this.wWidth,
+      height: this.wHeight
+    }
+  },
+  created() {
+    this.wHeight = window.innerHeight
+    this.wWidth = window.innerWidth
   },
   mounted() {
     let _this = this
@@ -83,9 +94,6 @@ export default {
       },
     })
   },
-  created() {
-    this.wHeight = window.innerHeight
-  },
   methods: {
     onNext(key) {
       this.step = key
@@ -102,16 +110,19 @@ export default {
 
 <style lang="scss">
 body {
+  --primary-color: #cc0a0a;
+  --bg-color: #ffe0b1;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  --primary-color: #cc0a0a;
+  background-color: var(--bg-color);
   .van-button--primary {
     color: #fff;
     background-color: var(--primary-color);
     border: 1px solid var(--primary-color);
   }
+
 }
 .fade-enter-active,
 .fade-leave-active {
