@@ -2,7 +2,7 @@ import Vue from 'vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
-axios.defaults.baseURL = 'http://localhost:8083/';
+axios.defaults.baseURL = '/flag/';
 axios.defaults.headers.common['Authorization'] = 123;
 // 添加请求拦截器
 axios.interceptors.request.use(function (config) {

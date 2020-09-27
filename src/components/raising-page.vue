@@ -1,7 +1,9 @@
 <template>
-  <div class="raising-container" :style="{height: height + 'px'}">
-    raising
-    <van-button @click="onClick">升旗</van-button>
+  <div class="raising-container">
+    <img class="raising-image" src="@/assets/raising.jpg" alt="raising">
+    <div class="fixed-btn">
+      <van-button class="btn" @click="onClick" type="primary">升旗</van-button>
+    </div>
   </div>
 </template>
 
@@ -14,14 +16,35 @@ export default {
     onClick(){
       setTimeout(() => {
         this.$emit('next')
-      }, 2000)
+      }, 500)
     }
   }
 }
 </script>
 
-<style lang="scss"> 
+<style lang="scss" scoped> 
 .raising-container {
-  background: #f00;
+  position: relative;
+  height: 100%;
+  // background: #f00;
+
+  .raising-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .fixed-btn {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+
+    .btn {
+      width: 120px;
+    }
+  }
 }
 </style>

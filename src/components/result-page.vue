@@ -1,103 +1,47 @@
 <template>
   <div class="result-container">
-    <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
-      <div class="place-box" :style="{ height: height + 'px' }">
-        guide
-        <van-button @click="onSalute">点赞({{ saluteNum }})</van-button>
-        <van-button @click="onShow">留言</van-button>
+    <img class="result-image" src="@/assets/result.jpg" alt="result">
+    <div class="fixed-btn">
+      <div class="btn-item">
+        <div class="text">{{ saluteNum }}</div>
+        <van-button class="btn" type="primary" size="small" @click="onSalute">点赞</van-button>
       </div>
-
-      <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
-        <div class="message-list" v-for="item in list" :key="item" :title="item">
-          message-list{{item}}
-        </div>
-      </van-list>
-    </van-pull-refresh>
-    <van-popup></van-popup>
-
-    <van-popup v-model="show" position="bottom" closeable round>
-      <c-message @success="onMessage"></c-message>
-    </van-popup>
+      <div class="btn-item">
+        <div class="text">{{ messageNum }}</div>
+        <van-button class="btn" type="primary" size="small" @click="listShow = true">留言</van-button>
+      </div>
+    </div>
+    <message-list ref="messageList" @message-num="onMessageNum"></message-list>
   </div>
 </template>
 
 <script>
-import CMessage from '@/components/message'
+import MessageList from '@/components/message-list'
 
 export default {
   props: {
     height: Number,
   },
   components: {
-    CMessage,
+    MessageList,
   },
   data() {
     return {
       saluteNum: 0,
       saluteLoading: false,
-      show: false,
-      count: 0,
-      isLoading: false,
-      list: [],
-      loading: false,
-      finished: false,
+      messageNum: 0
     }
   },
   created() {
-    this.fetchList()
     this.fetchNum()
   },
   methods: {
-    fetchList() {
-      this.axios.get('/flagSalute/message/page', {
-        params: {
-          size: 10,
-          current: 1
-        }
-      }).then(res => {
-        console.log(res)
-      }).catch(error => {
-        console.log(error)
-      })
-    },
     fetchNum(){
       this.axios.get('/flagSalute/num').then(res => {
-        console.log(res)
-        this.saluteNum = 30
+        this.saluteNum = res.data
       }).catch(error => {
         console.log(error)
       })
-    },
-    onRefresh() {
-      setTimeout(() => {
-        this.isLoading = false
-        this.count++
-        this.fetchList()
-      }, 1000)
-    },
-    onLoad() {
-      // 异步更新数据
-      // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-      setTimeout(() => {
-        for (let i = 0; i < 10; i++) {
-          this.list.push(this.list.length + 1);
-        }
-
-        // 加载状态结束
-        this.loading = false;
-
-        // 数据全部加载完成
-        if (this.list.length >= 40) {
-          this.finished = true;
-        }
-      }, 1000);
-    },
-    onShow() {
-      this.show = true
-    },
-    onMessage(){
-      this.show = false
-      this.onRefresh()
     },
     /**
      * 敬礼
@@ -110,14 +54,111 @@ export default {
         console.log(error)
       })
     },
+    onMessageNum(e){
+      this.messageNum = e
+    },
+    onOpenMessage(){
+      this.$refs.messageList.show()
+    }
   },
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .result-container {
+  position: relative;
+  height: 100%;
+
+  .result-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .fixed-btn {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+
+    .btn-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .text {
+      font-size: 18px;
+      line-height: 30px;
+      font-weight: 500;
+      color: #fff;
+    }
+    .btn {
+      width: 90px;
+    }
+  }
   .place-box {
     background-color: #00f;
   }
 }
+.message-wrapper {
+    position: relative;
+    overflow: hidden;
+    // display: flex;
+    // flex-direction: column;
+  }
+  .message-header {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 52px;
+    line-height: 52px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    color: #fff;
+    background-color: var(--primary-color);
+  }
+  .message-body {
+    position: relative;
+    // left: 0;
+    // right: 0;
+    // top: 52px;
+    // bottom: 50px;
+    padding-top: 52px;
+    padding-bottom: 70px;
+  }
+  .message-footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+
+    height: 70px;
+    padding: 0 50px;
+    background-color: #fff;
+  }
+
+  .item {
+    padding: 8px 15px;
+
+    .info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      border-bottom: 1px dashed #eee;
+      font-size: 16px;
+      color: #888;
+      line-height: 30px;
+    }
+    .content {
+      line-height: 20px;
+      font-size: 14px;
+      color: #444;
+    }
+  }
 </style>

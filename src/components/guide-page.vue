@@ -1,7 +1,6 @@
 <template>
-  <div class="guide-container" :style="{height: height + 'px'}">
-    <div class="animate__animated animate__bounce">guide</div>
-    <van-button @click="onClick">进入升旗仪式</van-button>
+  <div class="guide-container">
+    <img class="guide-image" src="@/assets/guide.jpg" alt="guide">
   </div>
 </template>
 
@@ -10,16 +9,17 @@ export default {
   props: {
     height: Number
   },
-  methods: {
-    onClick(){
-      this.$emit('next')
-    }
-  }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .guide-container {
-  background-color: #0f0;
+  position: relative;
+  // background-color: #0f0;
+
+  .guide-image {
+    width: 100%;
+    height: auto;
+  }
 }
 </style>
