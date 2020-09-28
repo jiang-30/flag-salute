@@ -40,12 +40,10 @@
 import CMessage from '@/components/message'
 
 export default {
-  props: {
-    height: Number,
-  },
   components: {
     CMessage,
   },
+  inject: ['height'],
   data(){
     return {
       listShow: false,

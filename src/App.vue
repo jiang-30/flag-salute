@@ -1,114 +1,118 @@
 <template>
-  <div id="app">
-    <div id="swiper" class="swiper-container" :style="{ height: wHeight + 'px' }">
-      <div class="swiper-wrapper">
-        <div class="swiper-slide">
-          <div id="swiper_child" class="swiper-container" style="height: 100%; width: 100%;">
-            <div class="swiper-wrapper" >
-              <div class="swiper-slide" style="height: auto;">
-                <guide-page :height="wHeight" @next="onNext('raising')"></guide-page>
-              </div>
-            </div>
-            <!-- <div class="swiper-scrollbar"></div> -->
-          </div>
-        </div>
-        <div class="swiper-slide">
-          <raising-page :height="wHeight" @next="onNext('result')"></raising-page>
-        </div>
-        <div class="swiper-slide">
-          <result-page :height="wHeight"></result-page>
-        </div>
-      </div>
-      <div class="swiper-pagination"></div>
-    </div>
+  <div id="app" ref="app" class="h100">
+    <van-swipe 
+      ref="swiper"
+      class="my-swipe h100"
+      indicator-color="red"
+      :loop="false"
+      vertical
+      @change="onChange">
+      <van-swipe-item>
+        <img class="fill-img" src="@/assets/image/guide1.jpg" alt="guide">
+      </van-swipe-item>
+      <van-swipe-item>
+        <img class="fill-img" src="@/assets/image/guide2.jpg" alt="guide">
+      </van-swipe-item>
+      <van-swipe-item>
+        <img class="fill-img" src="@/assets/image/guide3.jpg" alt="guide">
+      </van-swipe-item>
+      <van-swipe-item>
+        <img class="fill-img" src="@/assets/image/guide4.jpg" alt="guide">
+      </van-swipe-item>
+      <van-swipe-item>
+        <img class="fill-img" src="@/assets/image/guide5.jpg" alt="guide">
+      </van-swipe-item>
+      <van-swipe-item>
+        <img class="fill-img" src="@/assets/image/guide6.jpg" alt="guide">
+      </van-swipe-item>
+      <van-swipe-item>
+        <raising-page @next="onNext('result')"></raising-page>
+      </van-swipe-item>
+      <van-swipe-item>
+        <result-page></result-page>
+      </van-swipe-item>
+    </van-swipe>
 
     <div class="guide-btn" v-if="step == 'guide'">
-      <div class="btn animate__animated animate__bounce" @click="onNavGuide">进入升旗仪式</div>
+      <div class="btn animate__animated animate__bounce" @click="onNext('raising')">进入升旗仪式</div>
     </div>
 
     <div class="audio-btn"  @click="onPlay">
-      <img class="img animate-revolve" :style="{'animation-play-state':  play ? 'running' : 'paused'}" src="@/assets/icon_music.png" alt="music">
+      <img class="img animate-revolve" :style="{'animation-play-state':  play ? 'running' : 'paused'}" src="@/assets/image/icon_music.png" alt="music">
     </div>
+    <audio ref="bgMusic" style="visibility: hidden; width: 0; height: 0;" loop preload="metadata" autoplay>
+      <source src="@/assets/audio/bg.ogg" type="audio/ogg">
+      <source src="@/assets/audio/bg.mp3" type="audio/mpeg">
+      您的浏览器不支持 audio 元素。
+    </audio>
   </div>
 </template>
 
 <script>
-import GuidePage from '@/components/guide-page'
 import RaisingPage from '@/components/raising-page'
 import ResultPage from '@/components/result-page'
 
 export default {
   components: {
-    GuidePage,
     RaisingPage,
     ResultPage,
   },
   data() {
     return {
       step: 'guide',
-      // step: 'result',
-      wWidth: 370,
-      wHeight: 500,
       play: true,
-      swiper: null
+      flag: true
     }
   },
-  provide: function () {
+  provide(){
     return {
-      width: this.wWidth,
-      height: this.wHeight
+      width: window.innerWidth,
+      height: window.innerHeight
     }
-  },
-  created() {
-    this.wHeight = window.innerHeight
-    this.wWidth = window.innerWidth
-  },
-  mounted() {
-    let _this = this
-    this.swiper = new Swiper('#swiper', {
-      direction: 'vertical',
-      pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-      },
-      on:{
-        slideChange: function(){
-          let o = {
-            '0': 'guide',
-            '1': 'raising',
-            '2': 'result'
-          }
-          _this.step = o[this.activeIndex]
-        },
-      },
-    })
-    new Swiper('#swiper_child', {
-      //子swiper
-      direction: 'vertical',
-      nested: true,
-      resistanceRatio: 0,
-      slidesPerView: 'auto',
-      freeMode: true,
-      scrollbar: {
-        el: '.swiper-scrollbar',
-      },
-    })
   },
   methods: {
+    onChange(e){
+      if(this.flag){
+        this.$refs.bgMusic.play()
+        this.flag = false
+      }
+      if(e == 7) {
+        this.step = 'result'
+      } else if(e == 6) {
+        this.step = 'raising'
+      } else {
+        this.step = 'guide'
+      }
+    },
     onNext(key) {
       this.step = key
-    },
-    onNavGuide(){
-      this.swiper.slideTo(1, 1000, false)
+      let index = 0
+      if(key == 'raising'){
+        index = 6
+      } else if(key == 'result'){
+        index = 7
+      }
+      this.$refs.swiper.swipeTo(index, {immediate: true})
     },
     onPlay(){
+      let audio = this.$refs.bgMusic
       this.play = !this.play
+      if(this.play){
+        audio.play();
+      } else {
+        audio.pause();
+      }
     }
   },
 }
 </script>
 
 <style lang="scss">
+html,
+body,
+.h100 {
+  height: 100%;
+}
 body {
   --primary-color: #cc0a0a;
   --bg-color: #ffe0b1;
@@ -123,6 +127,11 @@ body {
     border: 1px solid var(--primary-color);
   }
 
+}
+.fill-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .fade-enter-active,
 .fade-leave-active {

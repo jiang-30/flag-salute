@@ -1,6 +1,6 @@
 <template>
   <div class="result-container">
-    <img class="result-image" src="@/assets/result.jpg" alt="result">
+    <img class="fill-img" src="@/assets/image/result.jpg" alt="result">
     <div class="fixed-btn">
       <div class="btn-item">
         <div class="text">{{ saluteNum }}</div>
@@ -76,7 +76,7 @@ export default {
 
   .fixed-btn {
     position: absolute;
-    bottom: 10px;
+    bottom: 80px;
     left: 0;
     right: 0;
     display: flex;

@@ -1,7 +1,7 @@
 <template>
   <div class="raising-container">
-    <img class="raising-image" src="@/assets/raising.jpg" alt="raising">
-    <img class="flag-image" :style="{transform: 'translateY(-' + flagHeight + 'px)'}" src="@/assets/flag.png" alt="flag">
+    <img class="fill-img" src="@/assets/image/raising.jpg" alt="raising">
+    <img class="flag-image" :style="{width: flagWidth + 'px', height: flagHeight + 'px', transform: 'translate(' + transWidth + 'px,-' + transHeight + 'px)'}" src="@/assets/image/flag.png" alt="flag">
     <div class="fixed-btn">
       <van-button class="btn" @click="onClick" type="primary">升旗</van-button>
     </div>
@@ -12,20 +12,51 @@
 export default {
   data(){
     return {
-      flagHeight: 0,
+      minHeight: 0,
+      maxHeight: 0,
+      flagWidth: 150,
+      flagHeight: 112,
+      flagBottomHeight: 26,
+      transHeight: 0,
+      transWidth: 0
     }
   },
   inject: ['width', 'height'],
+  mounted(){
+    let w = this.width
+    let h = this.height
+    
+    let imgW = 1080
+    let imgH = 2400
+    let tH = 2060
+    let bH = 627
+    let r
+    let sh = 0
+    if(w/h <= imgW/imgH){
+      r = h/imgH
+    } else {
+      r = w / imgW
+      sh = (imgH * r - h) / 2
+    }
+    this.flagWidth = 75 // this.flagWidth * r
+    this.flagHeight = 56 // this.flagHeight * r
+    this.minHeight = bH * r - sh - 13
+    this.maxHeight = tH * r - sh - this.flagHeight
+    this.transHeight = this.minHeight
+    this.transWidth = 26 * r
+    console.log(w, h, this.minHeight, this.maxHeight)
+  },
   methods: {
     onClick(){
-      setTimeout(() => {
-        this.$emit('next')
-      }, 500)
+      if(this.transHeight == this.maxHeight) return
       let timer = setInterval(() => {
-        this.flagHeight += 0.5;
-        if(this.flagHeight > 500){
+        this.transHeight += 5;
+        if(this.transHeight >= this.maxHeight){
           clearInterval(timer)
-          this.flagHeight = 500
+          this.transHeight = this.maxHeight
+          setTimeout(() => {
+            this.$emit('next', 'raising')
+          }, 2000);
         }
       }, 20)
     }
@@ -47,9 +78,7 @@ export default {
   .flag-image {
     position: absolute;
     left: 50%;
-    bottom: 200px;
-    width: 100px;
-    height: auto;
+    bottom: 0;
     z-index: 9;
   }
   .fixed-btn {
