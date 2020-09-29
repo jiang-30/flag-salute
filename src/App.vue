@@ -29,7 +29,7 @@
         <raising-page @next="onNext('result')"></raising-page>
       </van-swipe-item>
       <van-swipe-item>
-        <result-page></result-page>
+        <result-page :salute-num="saluteNum" :message-num="messageNum" @salute-num="onSaluteNum" @message-show="onMessage"></result-page>
       </van-swipe-item>
     </van-swipe>
 
@@ -37,31 +37,43 @@
       <div class="btn animate__animated animate__bounce" @click="onNext('raising')">进入升旗仪式</div>
     </div>
 
-    <div class="audio-btn"  @click="onPlay">
-      <img class="img animate-revolve" :style="{'animation-play-state':  play ? 'running' : 'paused'}" src="@/assets/image/icon_music.png" alt="music">
+    <div class="fixed-btns">
+      <div class="item-btn"  @click="onPlay">
+        <img class="img animate-revolve" :style="{'animation-play-state':  play ? 'running' : 'paused'}" src="@/assets/image/icon_music.png" alt="music">
+      </div>
+      <div class="item-btn"  @click="onMessage">
+        <img class="img" src="@/assets/image/icon_message.png" alt="message">
+      </div>
     </div>
-    <audio ref="bgMusic" style="visibility: hidden; width: 0; height: 0;" loop preload="metadata" autoplay>
+    
+    <audio ref="bgMusic" style="visibility: hidden; width: 0; height: 0;" loop preload="none">
       <source src="@/assets/audio/bg.ogg" type="audio/ogg">
       <source src="@/assets/audio/bg.mp3" type="audio/mpeg">
       您的浏览器不支持 audio 元素。
     </audio>
+    <message-list ref="messageList" @message-num="onMessageNum"></message-list>
+
   </div>
 </template>
 
 <script>
 import RaisingPage from '@/components/raising-page'
 import ResultPage from '@/components/result-page'
+import MessageList from '@/components/message-list'
 
 export default {
   components: {
     RaisingPage,
     ResultPage,
+    MessageList
   },
   data() {
     return {
       step: 'guide',
-      play: true,
-      flag: true
+      play: false,
+      flag: true,
+      saluteNum: 1,
+      messageNum: 2,
     }
   },
   provide(){
@@ -71,11 +83,26 @@ export default {
     }
   },
   methods: {
-    onChange(e){
+    fetchNum(){
+      this.axios.get('/flagSalute/num').then(res => {
+        this.saluteNum = res.data
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    handler(){
       if(this.flag){
-        this.$refs.bgMusic.play()
-        this.flag = false
+        setTimeout(() => {
+          this.fetchNum()
+          this.$refs.bgMusic.play()
+          this.play = true
+          this.flag = false
+        }, 1500)
       }
+    },
+    /** swiper change */
+    onChange(e){
+      this.handler()
       if(e == 7) {
         this.step = 'result'
       } else if(e == 6) {
@@ -102,11 +129,73 @@ export default {
       } else {
         audio.pause();
       }
+    },
+    onMessage(){
+      this.$refs.messageList.show()
+    },
+    onSaluteNum(e){
+      this.saluteNum = e
+    },
+    onMessageNum(e){
+      this.messageNum = e
     }
   },
 }
 </script>
+<style lang="scss" scoped>
+.animate-revolve {
+  animation:turn 3s linear infinite;   
+}
+@keyframes turn{
+  0%{transform:rotate(0deg);}
+  25%{transform:rotate(90deg);}
+  50%{transform:rotate(180deg);}
+  75%{transform:rotate(270deg);}
+  100%{transform:rotate(360deg);}
+}
+.guide-btn {
+    position: fixed;
+    bottom: 60px;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    display: flex;
+    justify-content: center;
 
+    .btn {
+      height: 40px;
+      padding: 0 20px;
+      line-height: 40px;
+      font-size: 18px;
+      font-weight: 500;
+      color: #fff;
+      background-color: rgba(255, 0, 0, 0.5);
+    }
+  }
+  .fixed-btns {
+    position: fixed;
+    right: 10px;
+    bottom: 200px;
+    z-index: 9;
+    display: flex;
+    flex-direction: column;
+  }
+  .item-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 35px;
+    height: 35px;
+    margin-top: 15px;
+    border: 1px solid #fff;
+    border-radius: 20px;
+    background: #cc0a0a;
+    .img {
+      width: 24px;
+      height: 24px;
+    }
+  }
+</style>
 <style lang="scss">
 html,
 body,
@@ -131,7 +220,7 @@ body {
 .fill-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  // object-fit: cover;
 }
 .fade-enter-active,
 .fade-leave-active {
@@ -140,53 +229,4 @@ body {
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
-</style>
-<style lang="scss" scoped>
-.animate-revolve {
-  animation:turn 3s linear infinite;   
-}
-@keyframes turn{
-  0%{transform:rotate(0deg);}
-  25%{transform:rotate(90deg);}
-  50%{transform:rotate(180deg);}
-  75%{transform:rotate(270deg);}
-  100%{transform:rotate(360deg);}
-}
-.guide-btn {
-    position: fixed;
-    bottom: 100px;
-    left: 0;
-    right: 0;
-    z-index: 99;
-    display: flex;
-    justify-content: center;
-
-    .btn {
-      height: 40px;
-      padding: 0 20px;
-      line-height: 40px;
-      font-size: 18px;
-      font-weight: 500;
-      color: #fff;
-      background-color: rgba(255, 0, 0, 0.5);
-    }
-  }
-  .audio-btn {
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    z-index: 99;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 35px;
-    height: 35px;
-    border-radius: 20px;
-    background: #cc0a0a;
-
-    .img {
-      width: 24px;
-      height: 24px;
-    }
-  }
 </style>

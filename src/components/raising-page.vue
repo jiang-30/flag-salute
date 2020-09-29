@@ -2,7 +2,7 @@
   <div class="raising-container">
     <img class="fill-img" src="@/assets/image/raising.jpg" alt="raising">
     <img class="flag-image" :style="{width: flagWidth + 'px', height: flagHeight + 'px', transform: 'translate(' + transWidth + 'px,-' + transHeight + 'px)'}" src="@/assets/image/flag.png" alt="flag">
-    <div class="fixed-btn">
+    <div class="fixed-btn" v-if="transHeight < maxHeight">
       <van-button class="btn" @click="onClick" type="primary">升旗</van-button>
     </div>
   </div>
@@ -26,21 +26,21 @@ export default {
     let w = this.width
     let h = this.height
     
-    let imgW = 1080
+    // let imgW = 1080
     let imgH = 2400
     let tH = 2060
     let bH = 627
-    let r
+    let r = h/imgH
     let sh = 0
-    if(w/h <= imgW/imgH){
-      r = h/imgH
-    } else {
-      r = w / imgW
-      sh = (imgH * r - h) / 2
-    }
-    this.flagWidth = 75 // this.flagWidth * r
-    this.flagHeight = 56 // this.flagHeight * r
-    this.minHeight = bH * r - sh - 13
+    // if(w/h <= imgW/imgH){
+    //   r = h/imgH
+    // } else {
+    //   r = w / imgW
+    //   sh = (imgH * r - h) / 2
+    // }
+    this.flagWidth = 90 // this.flagWidth * r
+    this.flagHeight = 67.2 // this.flagHeight * r
+    this.minHeight = bH * r - sh - 15.6
     this.maxHeight = tH * r - sh - this.flagHeight
     this.transHeight = this.minHeight
     this.transWidth = 26 * r
@@ -50,15 +50,16 @@ export default {
     onClick(){
       if(this.transHeight == this.maxHeight) return
       let timer = setInterval(() => {
-        this.transHeight += 5;
         if(this.transHeight >= this.maxHeight){
           clearInterval(timer)
           this.transHeight = this.maxHeight
           setTimeout(() => {
             this.$emit('next', 'raising')
           }, 2000);
+          return
         }
-      }, 20)
+        this.transHeight += 0.2;
+      }, 10)
     }
   }
 }
@@ -83,7 +84,7 @@ export default {
   }
   .fixed-btn {
     position: absolute;
-    bottom: 10px;
+    bottom: 25px;
     left: 0;
     right: 0;
     display: flex;

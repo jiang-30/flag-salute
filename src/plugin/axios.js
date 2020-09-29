@@ -1,12 +1,11 @@
 import Vue from 'vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
-
+// console.log(process.NODE_ENV)
 axios.defaults.baseURL = '/flag/';
 axios.defaults.headers.common['Authorization'] = 123;
 // 添加请求拦截器
 axios.interceptors.request.use(function (config) {
-  console.log(config)
   return config;
 }, function (error) {
   return Promise.reject(error);

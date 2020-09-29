@@ -29,7 +29,7 @@
         </div>
       </div>
     </van-popup>
-      <van-popup v-model="itemShow" position="bottom" closeable round get-container="body">
+    <van-popup v-model="itemShow" position="bottom" closeable round get-container="body">
       <c-message @success="onMessage"></c-message>
     </van-popup>
 </div>
@@ -98,11 +98,10 @@ export default {
       this.fetchList()
     },
     onLoad() {
-      console.log(2223)
       this.fetchList()
     },
     onMessage(){
-      this.show = false
+      this.itemShow = false
       this.onRefresh()
     },
   }

@@ -4,60 +4,43 @@
     <div class="fixed-btn">
       <div class="btn-item">
         <div class="text">{{ saluteNum }}</div>
-        <van-button class="btn" type="primary" size="small" @click="onSalute">点赞</van-button>
+        <van-button class="btn" type="primary" size="small" :loading="saluteLoading" @click="onSalute">敬礼</van-button>
       </div>
       <div class="btn-item">
         <div class="text">{{ messageNum }}</div>
         <van-button class="btn" type="primary" size="small" @click="onOpenMessage">留言</van-button>
       </div>
     </div>
-    <message-list ref="messageList" :height="height" @message-num="onMessageNum"></message-list>
   </div>
 </template>
 
 <script>
-import MessageList from '@/components/message-list'
-
 export default {
   props: {
-    height: Number,
-  },
-  components: {
-    MessageList,
+    saluteNum: Number,
+    messageNum: Number
   },
   data() {
     return {
-      saluteNum: 0,
       saluteLoading: false,
-      messageNum: 0
     }
   },
-  created() {
-    this.fetchNum()
-  },
   methods: {
-    fetchNum(){
-      this.axios.get('/flagSalute/num').then(res => {
-        this.saluteNum = res.data
-      }).catch(error => {
-        console.log(error)
-      })
-    },
     /**
      * 敬礼
      */
     onSalute() {
+      this.saluteLoading = true
       this.axios.post('/flagSalute/num').then(() => {
-        this.saluteNum++
+        this.$emit('salute-num', this.saluteNum + 1)
       }).catch(error => {
         console.log(error)
+      }).finally(() => {
+        this.saluteLoading = false
       })
     },
-    onMessageNum(e){
-      this.messageNum = e
-    },
     onOpenMessage(){
-      this.$refs.messageList.show()
+      this.$emit('message-show')
     }
   },
 }
@@ -76,7 +59,7 @@ export default {
 
   .fixed-btn {
     position: absolute;
-    bottom: 80px;
+    bottom: 100px;
     left: 0;
     right: 0;
     display: flex;
@@ -85,7 +68,13 @@ export default {
     .btn-item {
       display: flex;
       flex-direction: column;
+      justify-content: center;
       align-items: center;
+      // width: 120px;
+      // height: 120px;
+      // border-radius: 60px;
+      // background-color: rgba(0, 0, 0, 0.2);
+      // box-shadow: 0 0 30px 0 #eee;
     }
     .text {
       font-size: 18px;
