@@ -50,7 +50,7 @@
         clearable
       />
       <div style="margin: 16px;">
-        <van-button round block type="primary" :loading="messageLoading" native-type="submit">提交</van-button>
+        <van-button round block type="primary" :loading="messageLoading" :disabled="messageLoading" native-type="submit">提交</van-button>
       </div>
     </van-form>
     <van-popup v-model="show" position="bottom" round>
@@ -92,23 +92,25 @@ export default {
       }
     },
     onSubmit(values) {
-      this.messageLoading = true
-      this.axios.post('/flagSalute/message', values).then(() => {
-        this.$notify({
-          type: 'success',
-          message: '留言成功'
-        });
-        this.handlerInitFormData()
-        this.$emit('success')
-      }).catch(err => {
-        console.warn(err)
-        this.$notify({
-          type: 'warning',
-          message: '留言失败'
-        });
-      }).finally(() => {
-        this.messageLoading = false
-      })
+      if(!this.messageLoading) {
+        this.messageLoading = true
+        this.axios.post('/message', values).then(() => {
+          this.$notify({
+            type: 'success',
+            message: '留言成功'
+          });
+          this.handlerInitFormData()
+          this.$emit('success')
+        }).catch(err => {
+          console.warn(err)
+          this.$notify({
+            type: 'warning',
+            message: '留言失败'
+          });
+        }).finally(() => {
+          this.messageLoading = false
+        })
+      }
     },
     onConfirm(value) {
       this.formData.address = value

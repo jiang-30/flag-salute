@@ -1,29 +1,56 @@
 <template>
-  <div class="result-container">
-    <img class="fill-img" src="@/assets/image/result.jpg" alt="result">
-    <div class="fixed-btn">
-      <div class="btn-item">
-        <div class="text">{{ saluteNum }}</div>
-        <van-button class="btn" type="primary" size="small" :loading="saluteLoading" @click="onSalute">敬礼</van-button>
+  <base-container :active="active">
+    <img src="@/assets/image/guide8.jpg" alt="guide">
+    <template #item>
+      <img class="guide-item animate__animated animate__fadeInDown" :style="itemStyle[0]" src="@/assets/image/guide8_1.png">
+      <img class="guide-item animate__animated animate__fadeInBottomRight" :style="itemStyle[1]" src="@/assets/image/guide8_2.png">
+      <div class="fixed-btn">
+        <div class="btn-item">
+          <div class="text">{{ saluteNum }}</div>
+          <van-button class="btn" type="primary" :loading="saluteLoading" @click="onSalute">敬礼</van-button>
+        </div>
+        <div class="btn-item">
+          <div class="text">{{ messageNum }}</div>
+          <van-button class="btn" type="primary" @click="onOpenMessage">留言</van-button>
+        </div>
       </div>
-      <div class="btn-item">
-        <div class="text">{{ messageNum }}</div>
-        <van-button class="btn" type="primary" size="small" @click="onOpenMessage">留言</van-button>
-      </div>
-    </div>
-  </div>
+    </template>
+  </base-container>
 </template>
 
 <script>
+import BaseContainer from './base-container'
 export default {
   props: {
+    size: Object,
+    active: Boolean,
     saluteNum: Number,
     messageNum: Number
   },
-  data() {
+  data(){
     return {
+      items: [
+        [1080, 938, 0, 0],
+        [560, 795, 511, 1348]
+      ],
       saluteLoading: false,
     }
+  },
+  components: {
+    BaseContainer
+  },
+  computed: {
+    itemStyle(){
+      return this.items.map((it, index) => {
+        return {
+          width: it[0] * this.size.r + 'px',
+          height: it[1] * this.size.r + 'px',
+          left: it[2] * this.size.r - this.size.sw + 'px',
+          top: it[3] * this.size.r  - this.size.sh + 'px',
+          'z-index': index + 1
+        }
+      })
+    },
   },
   methods: {
     /**
@@ -31,7 +58,7 @@ export default {
      */
     onSalute() {
       this.saluteLoading = true
-      this.axios.post('/flagSalute/num').then(() => {
+      this.axios.post('/num').then(() => {
         this.$emit('salute-num', this.saluteNum + 1)
       }).catch(error => {
         console.log(error)
@@ -45,23 +72,13 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
-.result-container {
-  position: relative;
-  height: 100%;
-
-  .result-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
   .fixed-btn {
     position: absolute;
     bottom: 100px;
     left: 0;
     right: 0;
+    z-index: 99;
     display: flex;
     justify-content: space-around;
 
@@ -86,5 +103,4 @@ export default {
       width: 90px;
     }
   }
-}
 </style>

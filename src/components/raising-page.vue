@@ -1,92 +1,72 @@
 <template>
-  <div class="raising-container">
-    <img class="fill-img" src="@/assets/image/raising.jpg" alt="raising">
-    <img class="flag-image" :style="{width: flagWidth + 'px', height: flagHeight + 'px', transform: 'translate(' + transWidth + 'px,-' + transHeight + 'px)'}" src="@/assets/image/flag.png" alt="flag">
-    <div class="fixed-btn" v-if="transHeight < maxHeight">
-      <van-button class="btn" @click="onClick" type="primary">升旗</van-button>
-    </div>
-  </div>
+  <base-container :active="true">
+    <img src="@/assets/image/guide7.jpg" alt="guide">
+    <template #item>
+      <img class="flag-image" :style="itemStyle[0]" src="@/assets/image/guide7_1.png">
+      <img :style="itemStyle[1]" src="@/assets/image/guide7_2.png">
+      <img v-show="!flag" class="animate__animated animate__fadeInBottomRight animate__slower" :style="itemStyle[2]" src="@/assets/image/guide7_3.png">
+      <div class="fixed-btn" v-if="flag">
+        <van-button class="btn" @click="onClick" type="primary">升旗</van-button>
+      </div>
+    </template>
+  </base-container>
 </template>
 
 <script>
+import BaseContainer from './base-container'
 export default {
+  components: {
+    BaseContainer
+  },
+  props: {
+    size: Object,
+    active: Boolean
+  },
   data(){
     return {
-      minHeight: 0,
-      maxHeight: 0,
-      flagWidth: 150,
-      flagHeight: 112,
-      flagBottomHeight: 26,
-      transHeight: 0,
-      transWidth: 0
+      items: [
+        // [268, 222, 560, 321], // 58
+        [268, 222, 560, 1555], // 58
+        [1080, 2084, 0, 314],
+        [468, 664, 588, 1632]
+      ],
+      flag: true
     }
   },
-  inject: ['width', 'height'],
-  mounted(){
-    let w = this.width
-    let h = this.height
-    
-    // let imgW = 1080
-    let imgH = 2400
-    let tH = 2060
-    let bH = 627
-    let r = h/imgH
-    let sh = 0
-    // if(w/h <= imgW/imgH){
-    //   r = h/imgH
-    // } else {
-    //   r = w / imgW
-    //   sh = (imgH * r - h) / 2
-    // }
-    this.flagWidth = 90 // this.flagWidth * r
-    this.flagHeight = 67.2 // this.flagHeight * r
-    this.minHeight = bH * r - sh - 15.6
-    this.maxHeight = tH * r - sh - this.flagHeight
-    this.transHeight = this.minHeight
-    this.transWidth = 26 * r
-    console.log(w, h, this.minHeight, this.maxHeight)
+  computed: {
+    itemStyle(){
+      return this.items.map((it, index) => {
+        let data = {
+          width: it[0] * this.size.r + 'px',
+          height: it[1] * this.size.r + 'px',
+          left: it[2] * this.size.r - this.size.sw + 'px',
+          top: it[3] * this.size.r  - this.size.sh + 'px',
+          'z-index': index + 1
+        }
+        return data
+      })
+    },
   },
   methods: {
     onClick(){
-      if(this.transHeight == this.maxHeight) return
-      let timer = setInterval(() => {
-        if(this.transHeight >= this.maxHeight){
-          clearInterval(timer)
-          this.transHeight = this.maxHeight
-          setTimeout(() => {
-            this.$emit('next', 'raising')
-          }, 2000);
-          return
-        }
-        this.transHeight += 0.2;
-      }, 10)
+      if(this.items[0][3] == 321) return
+      // this.items[0][3] = 321
+      this.$set(this.items[0], 3, 321)
+      this.flag = false
     }
   }
 }
 </script>
-
 <style lang="scss" scoped> 
-.raising-container {
-  position: relative;
-  height: 100%;
-  // background: #f00;
-
-  .raising-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
   .flag-image {
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    z-index: 9;
+    transition: 5s top ease;
   }
   .fixed-btn {
     position: absolute;
     bottom: 25px;
     left: 0;
     right: 0;
+    z-index: 9;
     display: flex;
     justify-content: center;
 
@@ -94,5 +74,4 @@ export default {
       width: 120px;
     }
   }
-}
 </style>

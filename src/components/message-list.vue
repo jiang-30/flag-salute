@@ -1,16 +1,16 @@
 <template>
 <div>
-<van-popup v-model="listShow" position="bottom" closeable round :style="{height: (height - 158) + 'px'}" get-container="body">
+<van-popup v-model="listShow" position="bottom" closeable round :style="{height: (height - 108) + 'px'}" get-container="body">
       <div class="message-wrapper"> 
-        <div class="message-header">留言列表</div>
+        <div class="message-header">留言列表<span style="font-size: 0.6em">({{page.total}})</span></div>
         <div class="message-body">
-          <div :style="{height: (height - 280) + 'px', overflow: 'auto' }">
+          <div :style="{height: (height - 230) + 'px', overflow: 'auto' }">
             <van-pull-refresh v-model="refreshLoading" @refresh="onRefresh">
-              <van-list v-model="loadLoading" :finished="loadFinished" offset="100" finished-text="没有更多了" @load="onLoad">
+              <van-list style="min-height: 260px;" v-model="loadLoading" :finished="loadFinished" offset="100" finished-text="没有更多了" @load="onLoad">
                 <div class="item" v-for="item in list" :key="item._id">
                   <div class="info">
-                    <div style="color: #444;">{{ item.username || '-' }}</div>
-                    <div>
+                    <div class="" style="flex-shrink: 0; margin-right: 10px;">{{ item.username || '-' }}</div>
+                    <div class="" style="">
                       <span style="margin-right: 10px;">{{ item.address || '-' }}</span>
                       <span style="font-size: 12px;">{{ item.school || '-' }}</span>
                     </div>
@@ -54,11 +54,13 @@ export default {
       list: [],
       page: {
         current: 1,
-        size: 10
+        size: 10,
+        total: 0
       },
     }
   },
   created(){
+    this.loadLoading = true
     this.fetchList()
   },
   methods: {
@@ -70,7 +72,7 @@ export default {
           size: this.page.size,
           current: this.page.current
         }
-      this.axios.get('/flagSalute/message/page', {
+      this.axios.get('/message/page', {
         params
       }).then(res => {
         if(params.current == 1){
@@ -79,6 +81,7 @@ export default {
           this.list = this.list.concat(res.data)
         }
         this.$emit('message-num', res.page.total)
+        this.page.total = res.page.total
         if(res.page.total <= (res.page.current -1) * res.page.size + res.data.length){
           this.loadFinished = true
         } else {
@@ -87,7 +90,7 @@ export default {
       }).catch(error => {
         console.log(error)
       }).finally(() => {
-        this.loadingLoading = false
+        this.loadLoading = false
         this.refreshLoading = false
       })
     },
@@ -156,16 +159,23 @@ export default {
     .info {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       margin-bottom: 5px;
+      padding: 5px 0;
       border-bottom: 1px dashed #eee;
       font-size: 16px;
       color: #888;
-      line-height: 30px;
+      line-height: 20px;
     }
     .content {
       line-height: 20px;
       font-size: 14px;
       color: #444;
     }
+  }
+  .text-ellipsis {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 </style>
