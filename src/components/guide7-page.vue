@@ -67,7 +67,7 @@ export default {
   },
   methods: {
     fetchNum(){
-      this.axios.get('/num').then(res => {
+      this.axios.get('/salute/count').then(res => {
         this.saluteNum = res.data
       }).catch(error => {
         console.log(error)
@@ -78,7 +78,7 @@ export default {
      */
     onSalute() {
       this.saluteLoading = true
-      this.axios.post('/num').then(() => {
+      this.axios.post('/salute/count').then(() => {
         // this.$emit('salute-num', this.saluteNum + 1)
         this.saluteNum++
       }).catch(error => {

@@ -7,7 +7,7 @@
           <div :style="{height: (height - 230) + 'px', overflow: 'auto' }">
             <van-pull-refresh v-model="refreshLoading" @refresh="onRefresh">
               <van-list style="min-height: 260px;" v-model="loadLoading" :finished="loadFinished" offset="100" finished-text="没有更多了" @load="onLoad">
-                <div class="item" v-for="item in list" :key="item._id">
+                <div class="item" v-for="item in list" :key="item.id">
                   <div class="info">
                     <div class="" style="flex-shrink: 0; margin-right: 10px;">{{ item.username || '-' }}</div>
                     <div class="" style="">
@@ -72,17 +72,17 @@ export default {
           size: this.page.size,
           current: this.page.current
         }
-      this.axios.get('/message/page', {
+      this.axios.get('/salute/message', {
         params
       }).then(res => {
         if(params.current == 1){
-          this.list = res.data
+          this.list = res.data.records
         } else {
-          this.list = this.list.concat(res.data)
+          this.list = this.list.concat(res.data.records)
         }
-        this.$emit('message-num', res.page.total)
-        this.page.total = res.page.total
-        if(res.page.total <= (res.page.current -1) * res.page.size + res.data.length){
+        this.$emit('message-num', res.data.total)
+        this.page.total = res.data.total
+        if(res.data.total <= (res.data.current -1) * res.data.size + res.data.records.length){
           this.loadFinished = true
         } else {
           this.page.current++

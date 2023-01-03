@@ -94,7 +94,7 @@ export default {
     onSubmit(values) {
       if(!this.messageLoading) {
         this.messageLoading = true
-        this.axios.post('/message', values).then(() => {
+        this.axios.post('/salute/message', values).then(() => {
           this.$notify({
             type: 'success',
             message: '留言成功'
